@@ -25,6 +25,10 @@ def have_html(html : Regex)
   WaxSpec::MatchHTML.new html
 end
 
+def redirect_to(path : String)
+  WaxSpec::RedirectTo.new(path)
+end
+
 module WaxSpec
   class SessionClient(T) < HTTP::Client
     @session_handler : SessionHandler
@@ -202,10 +206,6 @@ module WaxSpec
         end
       end
     end
-  end
-
-  def redirect_to(path : String)
-    RedirectTo.new(path)
   end
 
   record RedirectTo, path : String do
