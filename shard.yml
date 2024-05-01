@@ -1,0 +1,16 @@
+name: wax-spec
+version: 0.1.0
+
+authors:
+  - Jamie Gaskins <jgaskins@hey.com>
+
+
+dependencies:
+  hot_topic:
+    github: jgaskins/hot_topic
+  armature:
+    github: jgaskins/armature
+
+crystal: '>= 1.12.1'
+
+license: MIT
