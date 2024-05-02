@@ -53,6 +53,10 @@ module WaxSpec
       self
     end
 
+    def session
+      @session_handler.wrapper
+    end
+
     def set_session(**kwargs : String) : self
       kwargs.each do |key, value|
         session_data[key.to_s] = JSON::Any.new(value)
