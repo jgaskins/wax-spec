@@ -15,7 +15,7 @@ abstract struct Wax::Factory
   end
 
   macro define(name)
-    struct {{name}}Factory < ::Wax::Factory
+    struct {{name}}Factory < {{@type}}
       {{yield}}
     end
   end
