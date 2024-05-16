@@ -1,6 +1,6 @@
 require "interro/validations"
 
-abstract struct Factory
+abstract struct Wax::Factory
   include Interro::Validations
 
   def noise
@@ -15,7 +15,7 @@ abstract struct Factory
   end
 
   macro define(name)
-    struct {{name}}Factory < Factory
+    struct {{name}}Factory < ::Wax::Factory
       {{yield}}
     end
   end
