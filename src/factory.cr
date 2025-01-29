@@ -7,7 +7,16 @@ abstract struct Wax::Factory
     Random::Secure.hex
   end
 
-  def invalid!(result)
+  def valid!(object)
+    case object
+    when Failure
+      invalid! object
+    else
+      object
+    end
+  end
+
+  def invalid!(result : Failure)
     raise InvalidModel.new(result.errors.join(", "))
   end
 
