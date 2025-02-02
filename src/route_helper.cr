@@ -40,6 +40,25 @@ module WaxSpec
     def initialize(@session_handler, @client)
     end
 
+    {% for method in %w(get post put head delete patch options) %}
+      # Executes a {{method.id.upcase}} request with form data and returns a `Response`. The "Content-Type" header is set
+      # to "application/json".
+      #
+      # ```
+      # require "http/client"
+      #
+      # client = HTTP::Client.new "www.example.com"
+      # response = client.{{method.id}} "/", json: {
+      #   foo: "bar",
+      # }
+      # ```
+      def {{method.id}}(path, headers : HTTP::Headers? = nil, *, json) : HTTP::Client::Response
+        request = new_request({{method.upcase}}, path, headers, json.to_json)
+        request.headers["Content-Type"] = "application/json"
+        exec request
+      end
+    {% end %}
+
     def session_cookie : String
       @session_handler.session_id
     end
