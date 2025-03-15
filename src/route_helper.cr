@@ -25,7 +25,7 @@ def have_html(html : Regex)
   WaxSpec::MatchHTML.new html
 end
 
-def redirect_to(path : String)
+def redirect_to(path : String | Regex)
   WaxSpec::RedirectTo.new(path)
 end
 
@@ -231,9 +231,17 @@ module WaxSpec
     end
   end
 
-  record RedirectTo, path : String do
+  record RedirectTo, path : String | Regex do
     def match(response : HTTP::Client::Response)
-      response.status.see_other? && (location = response.headers["location"]?) && location == path
+      response.status.see_other? && (location = response.headers["location"]?) && match?(location, path)
+    end
+
+    def match?(location : String, path : String)
+      location == path
+    end
+
+    def match?(location : String, path : Regex)
+      location.match path
     end
 
     def failure_message(response : HTTP::Client::Response)
