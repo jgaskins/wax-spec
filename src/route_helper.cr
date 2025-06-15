@@ -4,6 +4,10 @@ require "armature/form"
 require "json"
 require "uuid"
 
+def app(**apps)
+  app(WaxSpec::Entrypoint.new(apps))
+end
+
 def app(app)
   session_handler = WaxSpec::SessionHandler.new(WaxSpec::NotFoundHandler.new(app))
   WaxSpec::SessionClient.new(session_handler, HotTopic.new(session_handler))
@@ -30,6 +34,23 @@ def redirect_to(path : String | Regex)
 end
 
 module WaxSpec
+  struct Entrypoint(T)
+    include Armature::Route
+
+    def initialize(@apps : T)
+    end
+
+    def call(context)
+      route context do |r, response|
+        @apps.each do |segment, app|
+          r.on segment.to_s do
+            app.call context
+          end
+        end
+      end
+    end
+  end
+
   class SessionClient(T) < HTTP::Client
     @session_handler : SessionHandler
     @client : HotTopic::Client(T)

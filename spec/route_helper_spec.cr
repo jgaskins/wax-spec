@@ -1,6 +1,8 @@
 require "./spec_helper"
 require "../src/route_helper"
 
+alias AppProc = HTTP::Server::Context -> Nil
+
 struct Barebones
   def call(context)
     request = context.request
@@ -17,7 +19,7 @@ struct Barebones
     else
       response.status = :not_found
     end
-    request.handled!
+    context.handled!
   end
 end
 
@@ -87,6 +89,24 @@ describe "wax-spec/route_helper" do
       response = app.post "/"
 
       response.should have_status :bad_request
+    end
+  end
+
+  context "with a WaxSpec::Entrypoint" do
+    it "routes to the given path" do
+      foo_called = false
+      bar_called = false
+      app = app(
+        foo: AppProc.new { |c| foo_called = true },
+        bar: AppProc.new { |c| bar_called = true },
+      )
+
+      app.get "/foo"
+      foo_called.should eq true
+      bar_called.should eq false
+
+      app.get "/bar"
+      bar_called.should eq true
     end
   end
 end
