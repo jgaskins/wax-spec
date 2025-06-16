@@ -97,16 +97,18 @@ describe "wax-spec/route_helper" do
       foo_called = false
       bar_called = false
       app = app(
-        foo: AppProc.new { |c| foo_called = true },
+        foo: AppProc.new { |c| foo_called = true; c.handled! },
         bar: AppProc.new { |c| bar_called = true },
       )
 
-      app.get "/foo"
+      response = app.get "/foo"
       foo_called.should eq true
       bar_called.should eq false
+      response.should have_status :ok
 
-      app.get "/bar"
+      response = app.get "/bar"
       bar_called.should eq true
+      response.should have_status :not_found # Doesn't call `handled!`
     end
   end
 end
