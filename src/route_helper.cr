@@ -108,6 +108,11 @@ module WaxSpec
       @session_handler.session_data
     end
 
+    # Don't use the HTTP::Client default around_exec method
+    protected def around_exec(request, &)
+      yield
+    end
+
     private def exec_internal(request : HTTP::Request)
       unless request.cookies.has_key? "session"
         request.cookies << HTTP::Cookie.new(name: "session", value: session_cookie)
