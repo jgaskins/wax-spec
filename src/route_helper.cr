@@ -4,13 +4,13 @@ require "armature/form"
 require "json"
 require "uuid"
 
-def app(**apps)
-  app(WaxSpec::Entrypoint.new(apps))
+def app(app_name : String? = nil, **apps)
+  app(WaxSpec::Entrypoint.new(apps), app_name: app_name || apps.keys.join(','))
 end
 
-def app(app)
+def app(app, app_name : String = app.class.name)
   session_handler = WaxSpec::SessionHandler.new(WaxSpec::NotFoundHandler.new(app))
-  WaxSpec::SessionClient.new(session_handler, HotTopic.new(session_handler))
+  WaxSpec::SessionClient.new(session_handler, HotTopic::Client.new(session_handler, app_name: app_name))
 end
 
 def have_status(status : HTTP::Status)
