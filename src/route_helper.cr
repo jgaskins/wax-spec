@@ -3,6 +3,7 @@ require "armature/route"
 require "armature/form"
 require "json"
 require "uuid"
+require "xml"
 
 def app(app_name : String? = nil, **apps)
   app(WaxSpec::Entrypoint.new(apps), app_name: app_name || apps.keys.join(','))
@@ -27,6 +28,10 @@ end
 
 def have_html(html : Regex)
   WaxSpec::MatchHTML.new html
+end
+
+def have_text(text : String)
+  WaxSpec::HaveText.new text
 end
 
 def redirect_to(path : String | Regex)
@@ -351,6 +356,34 @@ module WaxSpec
       Expected NOT to match #{matcher.inspect} with this HTML body:
       #{response.body}
       MESSAGE
+    end
+  end
+
+  record HaveText, text : String do
+    def match(response : HTTP::Client::Response)
+      if io = response.body_io?
+        raise ArgumentError.new("Can't check a streamed body for text content since it reads destructively. Use versions of HTTP::Client methods that don't yield a response block.")
+      else
+        response.body.includes?(text) || inner_text(response).includes?(text)
+      end
+    end
+
+    def failure_message(response : HTTP::Client::Response)
+      <<-MESSAGE
+      Expected to find #{text.inspect} in this HTML text content:
+      #{inner_text response}
+      MESSAGE
+    end
+
+    def negative_failure_message(response : HTTP::Client::Response)
+      <<-MESSAGE
+      Expected NOT to find #{text.inspect} in this HTML text content:
+      #{inner_text response}
+      MESSAGE
+    end
+
+    def inner_text(response : HTTP::Client::Response) : String
+      XML.parse(response.body).text.gsub(/\W+/, ' ')
     end
   end
 end
