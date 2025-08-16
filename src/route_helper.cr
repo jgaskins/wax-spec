@@ -85,6 +85,14 @@ module WaxSpec
       end
     {% end %}
 
+    def follow_redirect(response : HTTP::Client::Response) : HTTP::Client::Response
+      if location = response.headers["location"]?
+        get location
+      else
+        raise "Cannot follow a redirect for a response with no 'Location' header"
+      end
+    end
+
     def session_cookie : String
       @session_handler.session_id
     end
