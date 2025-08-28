@@ -97,6 +97,10 @@ module WaxSpec
       @session_handler.session_id
     end
 
+    def form(**params)
+      params.merge({_authenticity_token: authenticity_token})
+    end
+
     def authenticity_token : String
       @session_handler.authenticity_token
     end
