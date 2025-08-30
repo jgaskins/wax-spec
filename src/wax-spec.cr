@@ -1,3 +1,9 @@
+def create(type : T.class, **args) forall T
+  {% begin %}
+    {{T}}Factory.new.create(**args)
+  {% end %}
+end
+
 def expect(&block : -> T) forall T
   Wax::Spec::BlockExpectation.new(block)
 end
