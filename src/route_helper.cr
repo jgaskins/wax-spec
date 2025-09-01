@@ -395,7 +395,7 @@ module WaxSpec
     end
 
     def inner_text(response : HTTP::Client::Response) : String
-      XML.parse(response.body).text.gsub(/\W+/, ' ')
+      XML.parse_html(response.body).text.gsub(/\W+/, ' ')
     end
   end
 end
