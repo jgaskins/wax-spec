@@ -4,12 +4,13 @@ version: 0.1.0
 authors:
   - Jamie Gaskins <jgaskins@hey.com>
 
-
 dependencies:
   hot_topic:
     github: jgaskins/hot_topic
   armature:
     github: jgaskins/armature
+  lexbor:
+    github: kostya/lexbor
 
 crystal: '>= 1.12.1'
 

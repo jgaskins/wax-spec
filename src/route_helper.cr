@@ -3,7 +3,7 @@ require "armature/route"
 require "armature/form"
 require "json"
 require "uuid"
-require "xml"
+require "lexbor"
 
 def app(app_name : String? = nil, **apps)
   app(WaxSpec::Entrypoint.new(apps), app_name: app_name || apps.keys.join(','))
@@ -335,14 +335,14 @@ module WaxSpec
     def failure_message(response : HTTP::Client::Response)
       <<-MESSAGE
       Expected to find #{html.inspect} in this HTML body:
-      #{response.body}
+      #{Lexbor.new(response.body).to_pretty_html}
       MESSAGE
     end
 
     def negative_failure_message(response : HTTP::Client::Response)
       <<-MESSAGE
       Expected NOT to find #{html.inspect} in this HTML body:
-      #{response.body}
+      #{Lexbor.new(response.body).to_pretty_html}
       MESSAGE
     end
   end
@@ -395,7 +395,7 @@ module WaxSpec
     end
 
     def inner_text(response : HTTP::Client::Response) : String
-      XML.parse_html(response.body).text.gsub(/\W+/, ' ')
+      Lexbor.new(response.body).nodes(:_text).map(&.tag_text).join(' ').gsub(/\s+/, ' ')
     end
   end
 end
