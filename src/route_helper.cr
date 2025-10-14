@@ -101,6 +101,14 @@ module WaxSpec
       params.merge({_authenticity_token: authenticity_token})
     end
 
+    def params(**data)
+      params = URI::Params.new
+      form(**data).each do |key, value|
+        params.add key.to_s, value
+      end
+      params
+    end
+
     def authenticity_token : String
       @session_handler.authenticity_token
     end
