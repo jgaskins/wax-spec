@@ -1,5 +1,11 @@
 require "interro/validations"
 
+def create(type : T.class, **args) forall T
+  {% begin %}
+    {{T}}Factory.new.create(**args)
+  {% end %}
+end
+
 abstract struct Wax::Factory
   include Interro::Validations
 
